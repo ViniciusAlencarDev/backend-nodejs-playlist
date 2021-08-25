@@ -6,7 +6,7 @@ const database = process.env.DBDATABASE;
 const host = process.env.DBHOST;
 const dialect = process.env.DBDIALECT;
 
-const connection = new Sequelize(username, password, database, {
+const connection = new Sequelize(database, username, password, {
     host,
     dialect
 })
