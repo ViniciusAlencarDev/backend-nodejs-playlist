@@ -1,4 +1,5 @@
 const connection = require('../database/connection')
+const { createToken } = require('../modules/jwt')
 
 const responseModel = {
     success: false,
@@ -13,7 +14,7 @@ module.exports = {
 
         const { username, password } = req.body;
 
-        const [, affectedRows] = await connection.query(`
+        const [id, affectedRows] = await connection.query(`
             INSERT INTO users VALUES (
                 DEFAULT,
                 '${username}',
@@ -23,7 +24,10 @@ module.exports = {
             );
         `)
 
-        response.success = affectedRows > 0
+        if(affectedRows > 0) {
+            response.success = true
+            response.data = [{ token: await createToken(id) }]
+        }
 
         return res.json(response)
     },
@@ -39,8 +43,11 @@ module.exports = {
             ORDER BY id DESC LIMIT 1
         `)
 
-        response.success = data.length > 0
-
+        if(data.length > 0) {
+            response.success = true
+            response.data = [{ token: await createToken(data[0].id) }]
+        }
+        
         return res.json(response)
     }
 
